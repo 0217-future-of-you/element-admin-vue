@@ -72,7 +72,7 @@
   <div slot="footer" class="dialog-footer">
     <el-button @click="cancle">取 消</el-button>
     <el-button type="primary" @click="Save">确 定</el-button>
-  </div>
+  
   </div>
 </el-dialog>
 
