@@ -36,6 +36,17 @@ import request from '@/utils/request'
       data
     })
   }
+      /**
+  * 保存
+  * @param {*} data 
+  */
+ export function saveData(data) {
+  return request({
+    url: '/Base_Manage/Base_Department/SaveData',
+    method: 'post',
+    data
+  })
+}
 
       /**
   * 删除部门

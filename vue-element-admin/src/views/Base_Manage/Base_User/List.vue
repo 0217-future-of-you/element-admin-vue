@@ -6,7 +6,12 @@
         <el-button type="primary" icon="el-icon-plus" @click="AddContent()"
           >添加</el-button
         >
-        <el-button type="danger" icon="el-icon-delete"  @click="submitDelete(selectValue)">删除</el-button>
+        <el-button
+          type="danger"
+          icon="el-icon-delete"
+          @click="submitDelete(selectValue)"
+          >删除</el-button
+        >
       </div>
       <div class="seach-custom">
         <!-- 搜索区域 -->
@@ -25,7 +30,7 @@
         </el-select>
 
         <el-input
-          v-model="keyword"
+          v-model="Entity.Search.keyword"
           placeholder="请输入内容"
           style="width: 240px; margin-left: 10px"
         ></el-input>
@@ -34,6 +39,7 @@
           type="primary"
           icon="el-icon-zoom-in"
           style="margin-left: 10px; margin-left: 10px"
+          @click="GetData()"
           >搜索</el-button
         >
         <el-button type="info" icon="el-icon-plus">重置</el-button>
@@ -113,7 +119,7 @@
 </template>
 
 <script>
-import { getAllUser,DeleteUser } from "../../../api/user";
+import { getAllUser, DeleteUser } from "../../../api/user";
 import EditForm from "./EditForm";
 export default {
   components: {
@@ -121,17 +127,18 @@ export default {
   },
   data() {
     return {
-      keyword: "",
+     
       options: [],
       Contention: "",
       tableData: [],
-      selectValue:[],//多选删除
+      selectValue: [], //多选删除
       Entity: {
         PageIndex: 1,
         PageRows: 5,
         SortField: "CreateTime",
         SortType: "desc",
         Search: {
+           keyword: "",
           //  roleId: "",
           //  roleName: ""
         }
@@ -140,7 +147,7 @@ export default {
       Page: {
         currentPage: 0, // 当前页码
         total: 0, // 总条数
-        pageSize: 0// 每页的数据条数
+        pageSize: 0 // 每页的数据条数
       }
     };
   },
@@ -159,26 +166,27 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
-      this.selectValue=[];
-      val.forEach(e=>{
-       this.selectValue.push(e.Id)
-      })
-      
-      console.log('%c 🍞 this.multipleSelection: ', 'font-size:20px;background-color: #3F7CFF;color:#fff;', this.selectValue);
+      this.selectValue = [];
+      val.forEach(e => {
+        this.selectValue.push(e.Id);
+      });
+
+      console.log(
+        "%c 🍞 this.multipleSelection: ",
+        "font-size:20px;background-color: #3F7CFF;color:#fff;",
+        this.selectValue
+      );
     },
+    /**编辑 */
     handleEdit(index, row) {
       console.log(index, row);
+      this.$refs.editform.OpenForm(row);
+     
     },
     handleDelete(index, row) {
-      let Ids=[]
-      Ids.push(row.Id)
-     
-       this.submitDelete(Ids)
-//       DeleteUser(data).then(res=>{
-//   console.log('%c 🥖 res: ', 'font-size:20px;background-color: #93C0A4;color:#fff;', res);
-
-// })
-      console.log(index, row);
+      let Ids = [];
+      Ids.push(row.Id);
+      this.submitDelete(Ids);
     },
     //分页
     handleSizeChange(val) {
@@ -191,7 +199,7 @@ export default {
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
       this.Page.currentPage = val;
-       this.Entity.PageIndex = this.Page.currentPage;
+      this.Entity.PageIndex = this.Page.currentPage;
       this.GetData();
     },
 
@@ -199,7 +207,7 @@ export default {
     GetData() {
       let that = this;
       getAllUser(this.Entity).then(res => {
-        that.Page.total=res.Total;
+        that.Page.total = res.Total;
         that.tableData = res.Data;
         console.log(
           "%c 🍐 res: ",
@@ -210,38 +218,37 @@ export default {
     },
     /**添加用户 */
     AddContent() {
-      this.$refs.editform.dialogFormVisible = true;
+      this.$refs.editform.OpenForm();
     },
     /**删除用户 */
-      submitDelete(ids){
-
-   this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
- DeleteUser(ids).then(res=>{
-       console.log('%c 🥖 res: ', 'font-size:20px;background-color: #93C0A4;color:#fff;', res);
-      if (res.Success==true) {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
+    submitDelete(ids) {
+      this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        DeleteUser(ids)
+          .then(res => {
+            console.log(
+              "%c 🥖 res: ",
+              "font-size:20px;background-color: #93C0A4;color:#fff;",
+              res
+            );
+            if (res.Success == true) {
+              this.$message({
+                type: "success",
+                message: "删除成功!"
+              });
+              this.GetData();
+            }
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除"
+            });
           });
-        this.GetData();
-    
-     }
-        
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
-        });
-
-
-     
-
-})
+      });
     },
     /**分组用户身份 */
 

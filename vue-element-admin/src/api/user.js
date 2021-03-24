@@ -56,3 +56,15 @@ export function DeleteUser(data) {
     data
   })
 }
+
+ /**
+  * 获取一个用户
+  * @param {*} data 
+  */
+  export function GetTheData(data) {
+    return request({
+      url: '/Base_Manage/Base_User/GetTheData',
+      method: 'post',
+      data
+    })
+  }

@@ -29,9 +29,13 @@
     
     <el-form-item label="部门:" :label-width="formLabelWidth"  prop="DepartmentId">
       <el-select v-model="selectedValue" placeholder="请选择活动区域">
-          <el-option style="height:60px" :value="entity.DepartmentId">
-             <el-tree :data="depatementData" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
-        </el-option>
+          <el-option style="height:auto" :value="entity.DepartmentId">
+             <el-tree 
+             :data="depatementData" 
+             :props="defaultProps" 
+             @node-click="handleNodeClick">
+             </el-tree>
+         </el-option>
       </el-select>
     </el-form-item>
      <el-form-item label="角色:" :label-width="formLabelWidth"  prop="RoleIdList">
@@ -56,7 +60,7 @@
 
 <script>
 import {getTreeDepartment} from '../../../api/Base_Department'
-import {SaveUser} from '../../../api/user'
+import {SaveUser,GetTheData} from '../../../api/user'
 import {getRoles} from '../../../api/role'   
 export default {
    name:"EditForm",
@@ -75,10 +79,19 @@ export default {
       };
     },
     mounted(){
-        this.GetThreeData(),
-        this.GetRoleData()
+      
         },
     methods:{
+     //打开窗体
+        OpenForm(row){
+          if (row) {
+            this.GetTheData(row.Id)
+          }
+        this.GetThreeData(),
+        this.GetRoleData()
+        this.dialogFormVisible=true;
+
+        },
         /**获取树形部门表 */
         GetThreeData(){
             let that=this;
@@ -92,15 +105,20 @@ export default {
             let that=this;
             getRoles({}).then(res=>{
                that.RoleList= res.Data;
-                console.log('%c 🍏 res: ', 'font-size:20px;background-color: #E41A6A;color:#fff;', res);
 
             })
         },
+        GetTheData(uid){
+        //  console.log('%c 🥦 uid: ', 'font-size:20px;background-color: #4b4b4b;color:#fff;', uid.Id);
+           GetTheData({id:uid}).then(res=>{
+             console.log('%c 🍛 res: ', 'font-size:20px;background-color: #7F2B82;color:#fff;', res);
+            this.entity=res.Data;
+              this.selectedValue=res.Data.DepartmentName;
+           })
+        },
         /**保存用户 */
-     Save(){
-         let that=this;
-        
-           console.log(that.entity);
+        Save(){
+          let that=this;
           SaveUser(that.entity).then(res=>{
               if (res.Success==true) {
                    console.log('%c 🍥 that.$$parent: ', 'font-size:20px;background-color: #7F2B82;color:#fff;', that.$parent);
@@ -112,16 +130,16 @@ export default {
               }
             
         })
-     },
-     cancle(){
+         },
+        /**取消 */
+        cancle(){
              this.dialogFormVisible = false;
-     },
-
-
+        },
           /**获取选中的值 */
         handleNodeClick(data) {
+         
                this.entity.DepartmentId=data.Id;
-              this.selectedValue=data.Text;
+               this.selectedValue=data.Text;
         
       }
     }
@@ -129,5 +147,4 @@ export default {
 </script>
 
 <style>
-
 </style>
